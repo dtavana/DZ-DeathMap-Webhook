@@ -78,7 +78,7 @@ namespace DZ_DeathMap_Webhook
                 }
 
                 // go through ALL *.ADM files from specified directory
-                string[] files = Directory.GetFiles( args[0], "*", SearchOption.AllDirectories );
+                string[] files = Directory.GetFiles( settings["LogPath"], "*", SearchOption.AllDirectories );
                 foreach (string fileName in files) 
                 {
                     if (fileName.Contains(".ADM")) 
@@ -200,7 +200,7 @@ namespace DZ_DeathMap_Webhook
                             
                         // load colors from color pallete
                         Color[] pallete = new Color[256];
-                        using (Bitmap colorPallete = new Bitmap(configColorPallete)) 
+                        using (Bitmap colorPallete = new Bitmap("pallete.bmp")) 
                         {
                             for (int i = 0; i < 256; i++) {
                                 pallete[i] = colorPallete.GetPixel(i, 0);
@@ -208,24 +208,17 @@ namespace DZ_DeathMap_Webhook
                         }
 
                         // draw intensityGrid into bitmap
-                        bool linear = true;
-                        if (settings["ColorScale"] == "log")
-                            linear = false;
-                        using (Bitmap outputHeatMap = new Bitmap( outputSize, outputSize)) {
+                        using (Bitmap outputHeatMap = new Bitmap(outputSize, outputSize)) {
                             for (int i = 0; i < outputSize; i++) 
                             {
                                 for (int j = 0; j < outputSize; j++) 
                                 {
-                                    int colorIndex = 1;
-                                    if (linear)
-                                        colorIndex = (int) ( ( intensityGrid[i,j] / max ) * 255 );
-                                    else
-                                        colorIndex = (int) ( ( Math.Log(intensityGrid[i,j] + 1) / Math.Log( max + 1) ) * 255 );
+                                    int colorIndex = (int)((intensityGrid[i, j] / max) * 255);
                                     Color pixelColor = pallete[colorIndex];
                                     outputHeatMap.SetPixel( i, j, pixelColor );
                                 }
                             }
-                            outputHeatMap.Save("DeathMap_HeatMap.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+                            outputHeatMap.Save("DeathMap.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
                         }
                         break;
 
@@ -279,7 +272,7 @@ namespace DZ_DeathMap_Webhook
                                 }
                             }
 
-                            outputPixelMap.Save("DeathMap_PixelMap.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+                            outputPixelMap.Save("DeathMap.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
                         }
                         break;
 
